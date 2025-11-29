@@ -192,7 +192,7 @@ fi
 ```
 
 - **Active Response Config**:
-
+ 
 ```sh
 <active-response>
   <command>disable-account</command>
