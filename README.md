@@ -2,8 +2,6 @@
 
 Hands-on SOC lab focused on real attacks, real detections, and automated responses using a lightweight but effective enterprise setup.
 
----
-
 - Demonstrate practical threat detection, endpoint monitoring, and automated remediation using:
 
   - Wazuh SIEM
@@ -11,8 +9,6 @@ Hands-on SOC lab focused on real attacks, real detections, and automated respons
   - Linux security logs
   - VirusTotal integration
   - Active Response automation
-
----
 
 ## Lab Environment
 
