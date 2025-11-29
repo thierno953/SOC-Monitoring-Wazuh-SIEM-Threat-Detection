@@ -4,15 +4,13 @@ Hands-on SOC lab focused on real attacks, real detections, and automated respons
 
 ---
 
-## Goal
+- Demonstrate practical threat detection, endpoint monitoring, and automated remediation using:
 
-Demonstrate practical threat detection, endpoint monitoring, and automated remediation using:
-
-- Wazuh SIEM
-- Sysmon (Windows visibility)
-- Linux security logs
-- VirusTotal integration
-- Active Response automation
+  - Wazuh SIEM
+  - Sysmon (Windows visibility)
+  - Linux security logs
+  - VirusTotal integration
+  - Active Response automation
 
 ---
 
