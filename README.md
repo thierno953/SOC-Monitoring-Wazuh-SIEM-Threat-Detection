@@ -1,4 +1,4 @@
-# SOC Monitoring Lab – Wazuh, Sysmon & Threat Response
+# SOC Monitoring Lab - Wazuh, Sysmon & Threat Response
 
 Hands-on SOC lab focused on real attacks, detection, and automated responses using a lightweight enterprise setup.
 
@@ -69,11 +69,11 @@ e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
 
 ### VirusTotal Integration + Auto File Removal
 
-- **Action**: Detect file → send hash to VirusTotal → delete if malicious
+- **Action**: Detect file -> send hash to VirusTotal -> delete if malicious
 
 - **Test File**: `Invoke-WebRequest https://secure.eicar.org/eicar.com.txt -OutFile "virus.com.txt"`
 
-- **Flow**: Wazuh detects → VirusTotal confirms → file deleted automatically.
+- **Flow**: Wazuh detects -> VirusTotal confirms -> file deleted automatically.
 
 ![Wazuh Dashboard](./assets/SOC-Monitoring-Wazuh-SIEM-Threat-Detection_win_05.png)
 
@@ -81,10 +81,10 @@ e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
 
 - **Monitored Event**:
 
-  - Event ID 1 → Process creation
-  - Event ID 3 → Network connection
-  - Event ID 10 → Process injection
-  - Event ID 22 → DNS query
+  - Event ID 1 -> Process creation
+  - Event ID 3 -> Network connection
+  - Event ID 10 -> Process injection
+  - Event ID 22 -> DNS query
 
 - **Detection**: Suspicious behavior is detected and forwarded to Wazuh.
 
@@ -99,7 +99,7 @@ e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
 ### RDP Brute Force Detection
 
 - **MITRE**: T1110.003
-- **Action**: 3 failed logins → Firewall block via Wazuh Active Response
+- **Action**: 3 failed logins -> Firewall block via Wazuh Active Response
 
 ```sh
 <rule id="100900" level="10" frequency="3" timeframe="120">
@@ -119,7 +119,7 @@ e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
 ### SSH Brute Force Detection (Linux)
 
 - **MITRE**: T1110
-- **Action**: 3 failed SSH logins → IP blocked via iptables
+- **Action**: 3 failed SSH logins -> IP blocked via iptables
 
 - **Attack Simulation**:
 
@@ -167,7 +167,7 @@ fi
 
 ### PAM / Account Protection (Account Lock)
 
-- **Action**: 3 failed login attempts → account automatically disabled
+- **Action**: 3 failed login attempts -> account automatically disabled
 
 - **Wazuh Rule**:
 
