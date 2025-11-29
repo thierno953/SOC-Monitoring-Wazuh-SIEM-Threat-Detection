@@ -1,49 +1,58 @@
-# SOC Monitoring Lab - Threat Detection & Response
+# SOC Monitoring Lab - Wazuh, Sysmon & Threat Response
 
-- **Platform**: Wazuh SIEM + Windows + Linux
-- **Goal**:
-
-Demonstrate real detection, threat hunting, and automated response quickly and clearly.
-
-### Lab Environment
-
-- **Wazuh Manager**: Linux
-- **Windows 10 Endpoint**: Sysmon + Wazuh Agent
-- **Linux Endpoint**: SSH brute-force detection
+Hands-on SOC lab focused on real attacks, real detections, and automated responses using a lightweight but effective enterprise setup.
 
 ---
 
-### Windows Registry Persistence Detection
+## Goal
+
+Demonstrate practical threat detection, endpoint monitoring, and automated remediation using:
+
+- Wazuh SIEM
+- Sysmon (Windows visibility)
+- Linux security logs
+- VirusTotal integration
+- Active Response automation
+
+---
+
+## Lab Environment
+
+| Component             | Role                             |
+| --------------------- | -------------------------------- |
+| Wazuh Manager (Linux) | Central SIEM & response engine   |
+| Windows 10 Endpoint   | Wazuh Agent + Sysmon             |
+| Linux Endpoint        | SSH monitoring & Active Response |
+
+Controlled attacks were executed to validate detection rules, FIM monitoring, malware hash identification, persistence detection, and automated blocking mechanisms across both Windows and Linux systems.
+
+---
+
+## Key Attacks & Detections
+
+### Windows Registry Persistence
 
 - **MITRE**: T1547.001
 - **Action**: Add/remove Run key
+- **Command**:
 
-- Registry Key Monitored:
+```sh
+Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "MalwarePersistence" -Value "C:\malware.exe"
+```
 
-`HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run`
-
-- Attack Command:
-
-`Set-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "MalwarePersistence" -Value "C:\malware.exe"`
-
-- Wazuh Detection
+- Wazuh Detection: Monitors Run key changes and alerts on suspicious entries
 
 ![Wazuh Dashboard](./assets/SOC-Monitoring-Wazuh-SIEM-Threat-Detection_win_01.png)
 ![Wazuh Dashboard](./assets/SOC-Monitoring-Wazuh-SIEM-Threat-Detection_win_02.png)
 
 ### File Integrity Monitoring (FIM)
 
-- **Action**: Create or modify files
+- **Action**: Detect file creation/modification
+- **Directory Monitored**: `C:\Users\win10\Desktop\wazuh`
 
-- Monitored Directory
+- **Test**: `echo "test_malware" > C:\Users\win10\Desktop\wazuh\test_malware.exe`
 
-```sh
-C:\Users\win10\Desktop\wazuh
-```
-
-- Test File Creation: `echo "test_malware" > C:\Users\win10\Desktop\wazuh\test_malware.exe`
-
-- Wazuh Detection:
+- Wazuh Detection: Logs and alerts on new or modified files
 
 ![Wazuh Dashboard](./assets/SOC-Monitoring-Wazuh-SIEM-Threat-Detection_win_03.png)
 
@@ -51,10 +60,7 @@ C:\Users\win10\Desktop\wazuh
 
 - **MITRE**: T1204.002
 - **Action**: Match file hashes with known malware
-
-- Hash List:
-
-`/var/ossec/etc/lists/malware-hashes`
+- **Hash List**: `/var/ossec/etc/lists/malware-hashes`
 
 ```sh
 e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
@@ -62,30 +68,21 @@ e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
 5d41402abc4b2a76b9719d911017c592:test_hello
 ```
 
-- Wazuh Detection:
+- Wazuh Detection: Alerts on known malware hashes and triggers automatic response
 
 ![Wazuh Dashboard](./assets/SOC-Monitoring-Wazuh-SIEM-Threat-Detection_win_04.png)
 
 ### VirusTotal Integration + Automatic File Removal
 
-**Action**: Detect file -> Send hash to VirusTotal -> Auto-delete
+- **Action**: Detect file -> Send hash to VirusTotal -> Auto-delete
 
-- Malware Test:
+- Test File: `Invoke-WebRequest https://secure.eicar.org/eicar.com.txt -OutFile "virus.com.txt"`
 
-  `Invoke-WebRequest https://secure.eicar.org/eicar.com.txt -OutFile "virus.com.txt"`
-
-- Detection & Response Flow:
-
-  - Wazuh detects file creation
-  - Sends hash to VirusTotal -> 65 engines detect
-  - Triggers remove-threat.exe
-  - File automatically deleted
-
-- Wazuh Logs:
+- **Flow**: Wazuh detects file -> sends hash to VirusTotal -> malware detected -> triggers removal -> file deleted automatically
 
 ![Wazuh Dashboard](./assets/SOC-Monitoring-Wazuh-SIEM-Threat-Detection_win_05.png)
 
-### Sysmon Threat Hunting
+### Sysmon Threat Hunting (Windows)
 
 - Monitored Events:
 
@@ -94,24 +91,20 @@ e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
   - Event ID 3 -> Network Connection
   - Event ID 10 -> Process Injection
 
-- DNS Monitoring:
+- Detects suspicious behavior and forwards alerts to Wazuh
 
 ![Wazuh Dashboard](./assets/SOC-Monitoring-Wazuh-SIEM-Threat-Detection_win_06.png)
 
-### Windows Defender Threat Detection
+### Windows Defender Alerts
 
-- **Action**: Defender alerts forwarded to Wazuh
-
-- Detection:
+- Defender alerts forwarded to Wazuh for correlation
 
 ![Wazuh Dashboard](./assets/SOC-Monitoring-Wazuh-SIEM-Threat-Detection_win_07.png)
 
-### RDP Brute Force Detection & Auto-Blocking
+### RDP Brute Force Detection
 
 - **MITRE**: T1110.003
-- **Action**: 3 failed logins -> Firewall block
-
-- Wazuh Rule:
+- **Action**: 3 failed logins -> Firewall block via Wazuh Active Response
 
 ```sh
 <rule id="100900" level="10" frequency="3" timeframe="120">
@@ -131,23 +124,18 @@ e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
 ### SSH Brute Force Detection (Linux)
 
 - **MITRE**: T1110
-- **Action**: 3 failed SSH logins -> IP blocked via Active Response
+- **Action**: 3 failed SSH logins -> IP blocked via iptables & Wazuh Active Response
 
 - Attack Simulation:
 
-`hydra -l root -P passwords.txt ssh://192.168.1.40`
-
-- Wazuh Detection:
-
-- Auto-Response:
-
-`iptables -A INPUT -s attacker_ip -j DROP`
+```sh
+hydra -l root -P passwords.txt ssh://192.168.1.40
+iptables -A INPUT -s attacker_ip -j DROP
+```
 
 ### PAM Account Protection
 
-- **Action**: 3 failed login attempts -> PAM account disabled
-
-- Wazuh Rule:
+- **Action**: 3 failed login attempts -> account disabled automatically via Wazuh rule
 
 ```sh
 <rule id="120100" level="10" frequency="3" timeframe="120">
@@ -160,17 +148,15 @@ e0ec2cd43f71c80d42cd7b0f17802c73:mirai_botnet
 
 ---
 
-## Summary
+### Lessons Learned (Wazuh SOC Lab)
 
-- Techniques Covered: 8+ MITRE ATT&CK Techniques
-- Detection Rate: 100% of simulated attacks
-- Response Time: < 60 seconds for automated remediation
-- Platforms: Windows + Linux
+- Wazuh rules detect persistence early (registry, scheduled tasks, SSH brute-force).
+- Combining endpoint and network monitoring improves detection of exfiltration.
+- Sysmon + Wazuh rules catch obfuscated PowerShell and suspicious processes.
+- Automated responses (firewall, Active Response) work fast but need careful tuning.
+- Wazuh logs provide a clear audit trail for investigation and forensics.
 
-- Key Strengths:
+---
 
-  - Real-time FIM and registry monitoring
-  - Automated malware analysis and removal
-  - Multi-layer brute force protection
-  - Enterprise-grade threat hunting
-  - Proven automation and response workflows
+This lab demonstrated that Wazuh can reliably detect and respond to attacks on both Windows and Linux endpoints.
+All simulated threats were detected and automatically mitigated in under 60 seconds, showing the effectiveness of Wazuh rules, Active Response, and combined endpoint-network monitoring.
