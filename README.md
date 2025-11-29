@@ -20,7 +20,7 @@ Hands-on SOC lab focused on real attacks, real detections, and automated respons
 
 Controlled attacks were executed to validate detection rules, FIM monitoring, malware hash identification, persistence detection, and automated blocking mechanisms across both Windows and Linux systems.
 
----
+--- 
 
 ## Key Attacks & Detections
 
