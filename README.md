@@ -154,7 +154,5 @@ iptables -A INPUT -s attacker_ip -j DROP
 - Automated responses (firewall, Active Response) work fast but need careful tuning.
 - Wazuh logs provide a clear audit trail for investigation and forensics.
 
----
-
 This lab demonstrated that Wazuh can reliably detect and respond to attacks on both Windows and Linux endpoints.
 All simulated threats were detected and automatically mitigated in under 60 seconds, showing the effectiveness of Wazuh rules, Active Response, and combined endpoint-network monitoring.
